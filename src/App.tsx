@@ -14,6 +14,7 @@ import Obras from './pages/app/Obras'
 import Materiais from './pages/app/Materiais'
 import Agentes from './pages/app/Agentes'
 import PortalCliente from './pages/public/PortalCliente'
+import Apresentacao from './pages/public/Apresentacao'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,6 +31,7 @@ export default function App() {
             {/* Public routes */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/obra/:id" element={<PortalCliente />} />
+            <Route path="/apresentacao" element={<Apresentacao />} />
 
             {/* Protected app routes */}
             <Route path="/app" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
