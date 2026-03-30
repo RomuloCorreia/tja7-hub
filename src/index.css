@@ -1,0 +1,125 @@
+@import "tailwindcss";
+
+/* ============================================
+   TJA7 HUB — Design System
+   Cores: Dourado #F5C518 / Dark premium
+   ============================================ */
+
+@theme {
+  --color-gold-50: #fffef0;
+  --color-gold-100: #fff9c4;
+  --color-gold-200: #fff176;
+  --color-gold-300: #ffe925;
+  --color-gold-400: #F5C518;
+  --color-gold-500: #d4a017;
+  --color-gold-600: #b8860b;
+
+  --color-surface: #0e0e14;
+  --color-surface-2: #16161e;
+  --color-surface-3: #1e1e28;
+  --color-bg: #06060a;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(245, 197, 24, 0.2) transparent;
+}
+
+body {
+  background: var(--color-bg);
+  color: #e2e2e8;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Glass morphism */
+.glass {
+  background: rgba(14, 14, 20, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-hover:hover {
+  background: rgba(14, 14, 20, 0.85);
+  border-color: rgba(245, 197, 24, 0.15);
+}
+
+/* Gold glow button */
+.glow-button {
+  background: linear-gradient(135deg, #F5C518, #d4a017);
+  color: #06060a;
+  font-weight: 600;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.glow-button::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg, #F5C518, #d4a017);
+  filter: blur(12px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.glow-button:hover::before {
+  opacity: 0.6;
+}
+
+.glow-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 30px rgba(245, 197, 24, 0.3);
+}
+
+/* Gold gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #F5C518 0%, #ffe925 50%, #d4a017 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Gradient border */
+.gradient-border {
+  position: relative;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(245, 197, 24, 0.3), transparent 60%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Glow pulse animation */
+.glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(245, 197, 24, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(245, 197, 24, 0.4); }
+}
+
+/* Gold gradient text shimmer */
+.text-shimmer {
+  background: linear-gradient(110deg, #F5C518 0%, #ffe925 45%, #F5C518 55%, #d4a017 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
