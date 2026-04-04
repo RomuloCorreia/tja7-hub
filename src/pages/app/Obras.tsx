@@ -1,8 +1,9 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useConstructions } from '../../hooks/useConstructions'
 import { useClients } from '../../hooks/useClients'
 import type { Construction, ConstructionPhase } from '../../types'
-import { HardHat, Plus, Calendar, User, MapPin, X, ChevronRight } from 'lucide-react'
+import { HardHat, Plus, Calendar, User, MapPin, X } from 'lucide-react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
@@ -17,10 +18,10 @@ const PHASES: { key: ConstructionPhase; label: string; color: string }[] = [
 ]
 
 export default function Obras() {
-  const { constructions, isLoading, createConstruction, updateConstruction } = useConstructions()
+  const navigate = useNavigate()
+  const { constructions, isLoading, createConstruction } = useConstructions()
   const { clients } = useClients()
   const [showNew, setShowNew] = useState(false)
-  const [selected, setSelected] = useState<Construction | null>(null)
 
   const getClientName = (id: string) => clients.find(c => c.id === id)?.name ?? 'Cliente'
   const getPhaseInfo = (phase: ConstructionPhase) => PHASES.find(p => p.key === phase) ?? PHASES[0]
@@ -47,12 +48,18 @@ export default function Obras() {
           const phaseInfo = getPhaseInfo(c.phase)
           return (
             <div key={c.id} className="glass rounded-xl p-5 gradient-border cursor-pointer hover:bg-white/[0.03] transition-colors"
-              onClick={() => setSelected(c)}>
+              onClick={() => navigate(`/app/obras/${c.id}`)}>
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <h3 className="text-sm font-medium">{c.title}</h3>
                   <p className="text-xs text-white/40 flex items-center gap-1 mt-1">
-                    <User size={10} /> {getClientName(c.client_id)}
+                    <User size={10} />
+                    <span
+                      className="cursor-pointer hover:text-gold-400 transition-colors"
+                      onClick={e => { e.stopPropagation(); navigate(`/app/cliente/${c.client_id}`) }}
+                    >
+                      {getClientName(c.client_id)}
+                    </span>
                   </p>
                 </div>
                 <HardHat size={18} style={{ color: phaseInfo.color }} />
@@ -122,71 +129,6 @@ export default function Obras() {
         </div>
       )}
 
-      {/* Detail Modal */}
-      {selected && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setSelected(null)}>
-          <div className="glass rounded-2xl w-full max-w-lg p-6 space-y-4" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold">{selected.title}</h2>
-              <button onClick={() => setSelected(null)} className="text-white/40"><X size={20} /></button>
-            </div>
-
-            <div className="space-y-3">
-              <div className="text-sm text-white/60">
-                <p><strong>Cliente:</strong> {getClientName(selected.client_id)}</p>
-                <p><strong>Endereco:</strong> {selected.address}</p>
-                <p><strong>Inicio:</strong> {format(new Date(selected.start_date), 'dd/MM/yyyy', { locale: ptBR })}</p>
-                {selected.estimated_end && <p><strong>Previsao:</strong> {format(new Date(selected.estimated_end), 'dd/MM/yyyy', { locale: ptBR })}</p>}
-              </div>
-
-              <div>
-                <p className="text-xs text-white/40 mb-3">Fases da Obra</p>
-                <div className="space-y-2">
-                  {PHASES.map(p => {
-                    const currentIdx = PHASES.findIndex(ph => ph.key === selected.phase)
-                    const thisIdx = PHASES.findIndex(ph => ph.key === p.key)
-                    const isDone = thisIdx < currentIdx
-                    const isCurrent = thisIdx === currentIdx
-
-                    return (
-                      <div key={p.key} className={`flex items-center gap-3 px-3 py-2 rounded-lg ${isCurrent ? 'bg-white/5' : ''}`}>
-                        <div className={`w-3 h-3 rounded-full ${isDone ? 'bg-emerald-400' : isCurrent ? 'glow-pulse' : 'bg-white/10'}`}
-                          style={isCurrent ? { background: p.color } : {}} />
-                        <span className={`text-sm ${isCurrent ? 'font-medium' : isDone ? 'text-white/60 line-through' : 'text-white/30'}`}>
-                          {p.label}
-                        </span>
-                        {isCurrent && <ChevronRight size={14} className="ml-auto text-gold-400" />}
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-
-              {/* Progress update */}
-              <div>
-                <p className="text-xs text-white/40 mb-2">Atualizar Fase</p>
-                <div className="flex gap-2 flex-wrap">
-                  {PHASES.map(p => (
-                    <button
-                      key={p.key}
-                      onClick={() => {
-                        const progress = Math.round(((PHASES.findIndex(ph => ph.key === p.key) + 1) / PHASES.length) * 100)
-                        updateConstruction.mutate({ id: selected.id, phase: p.key, progress })
-                        setSelected({ ...selected, phase: p.key, progress })
-                      }}
-                      className={`text-xs px-2 py-1 rounded border transition-colors ${
-                        selected.phase === p.key ? 'border-gold-400/30 bg-gold-400/20 text-gold-400' : 'border-white/10 text-white/40'
-                      }`}
-                    >
-                      {p.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { MessageSquare, Bot, Zap, Calculator, Building2, MapPin, Package, Phone, Settings, CheckCircle } from 'lucide-react'
+import { Bot, Zap, Calculator, Building2, MapPin, Package, Phone, Settings, CheckCircle } from 'lucide-react'
 
 interface AgentConfig {
   id: string
@@ -8,9 +8,9 @@ interface AgentConfig {
   icon: typeof Bot
   color: string
   active: boolean
+  status: string
   whatsappNumber: string
   features: string[]
-  stats: { conversations: number; leads: number; conversions: number }
 }
 
 const AGENTS: AgentConfig[] = [
@@ -21,9 +21,9 @@ const AGENTS: AgentConfig[] = [
     icon: Calculator,
     color: '#F5C518',
     active: true,
+    status: 'Pronto para ativar',
     whatsappNumber: '5588999033208',
     features: ['Simulacao instantanea 24/7', 'Calculo MCMV 2026', 'Qualificacao automatica', 'Salva lead no CRM', 'Notifica vendedores'],
-    stats: { conversations: 0, leads: 0, conversions: 0 },
   },
   {
     id: 'corretor',
@@ -32,9 +32,9 @@ const AGENTS: AgentConfig[] = [
     icon: Building2,
     color: '#a78bfa',
     active: false,
+    status: 'Em desenvolvimento',
     whatsappNumber: '5588999033208',
     features: ['Catalogo de imoveis', 'Filtro por preco/bairro', 'Agendamento de visitas', 'Follow-up automatico', 'Qualificacao de lead'],
-    stats: { conversations: 0, leads: 0, conversions: 0 },
   },
   {
     id: 'loteamento',
@@ -43,9 +43,9 @@ const AGENTS: AgentConfig[] = [
     icon: MapPin,
     color: '#34d399',
     active: false,
+    status: 'Em desenvolvimento',
     whatsappNumber: '5588999033208',
     features: ['Mapa de lotes', 'Simulacao de pagamento', 'Reserva temporaria', 'Envio de proposta', 'Integracao CRM'],
-    stats: { conversations: 0, leads: 0, conversions: 0 },
   },
   {
     id: 'materiais',
@@ -54,9 +54,9 @@ const AGENTS: AgentConfig[] = [
     icon: Package,
     color: '#60a5fa',
     active: false,
+    status: 'Em desenvolvimento',
     whatsappNumber: '5588999033208',
     features: ['Consulta estoque', 'Orcamento automatico', 'Kit MCMV', 'Alerta reposicao', 'Historico compras'],
-    stats: { conversations: 0, leads: 0, conversions: 0 },
   },
 ]
 
@@ -89,12 +89,12 @@ export default function Agentes() {
                     {agent.active ? (
                       <>
                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                        <span className="text-[10px] text-emerald-400">Ativo</span>
+                        <span className="text-[10px] text-emerald-400">{agent.status}</span>
                       </>
                     ) : (
                       <>
-                        <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
-                        <span className="text-[10px] text-white/30">Inativo</span>
+                        <div className="w-1.5 h-1.5 rounded-full bg-gold-400/50 animate-pulse" />
+                        <span className="text-[10px] text-gold-400/70">{agent.status}</span>
                       </>
                     )}
                   </div>
@@ -106,8 +106,10 @@ export default function Agentes() {
             <p className="text-xs text-white/50 mb-3">{agent.description}</p>
 
             <div className="flex items-center gap-4 text-xs text-white/30 pt-3 border-t border-white/5">
-              <span className="flex items-center gap-1"><MessageSquare size={10} /> {agent.stats.conversations} conversas</span>
-              <span className="flex items-center gap-1"><Zap size={10} /> {agent.stats.leads} leads</span>
+              <span className="flex items-center gap-1">
+                <Zap size={10} />
+                {agent.active ? 'WhatsApp conectado' : 'Ativacao na proxima fase'}
+              </span>
             </div>
           </div>
         ))}
@@ -138,7 +140,7 @@ export default function Agentes() {
                 </div>
                 <div>
                   <h2 className="text-lg font-bold">{selected.name}</h2>
-                  <p className="text-xs text-white/40">{selected.active ? 'Ativo' : 'Inativo'}</p>
+                  <p className="text-xs text-white/40">{selected.status}</p>
                 </div>
               </div>
               <button onClick={() => setSelected(null)} className="text-white/40 hover:text-white/80">
@@ -168,19 +170,24 @@ export default function Agentes() {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-white/5 rounded-xl p-3 text-center">
-                <p className="text-lg font-bold" style={{ color: selected.color }}>{selected.stats.conversations}</p>
-                <p className="text-[10px] text-white/40">Conversas</p>
+            <div className="bg-white/5 rounded-xl p-4">
+              <p className="text-xs text-white/40 mb-1">Status</p>
+              <div className="flex items-center gap-2">
+                {selected.active ? (
+                  <>
+                    <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="text-sm text-emerald-400 font-medium">{selected.status}</span>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-2 h-2 rounded-full bg-gold-400/60 animate-pulse" />
+                    <span className="text-sm text-gold-400/80 font-medium">{selected.status}</span>
+                  </>
+                )}
               </div>
-              <div className="bg-white/5 rounded-xl p-3 text-center">
-                <p className="text-lg font-bold" style={{ color: selected.color }}>{selected.stats.leads}</p>
-                <p className="text-[10px] text-white/40">Leads</p>
-              </div>
-              <div className="bg-white/5 rounded-xl p-3 text-center">
-                <p className="text-lg font-bold" style={{ color: selected.color }}>{selected.stats.conversions}</p>
-                <p className="text-[10px] text-white/40">Conversoes</p>
-              </div>
+              <p className="text-[10px] text-white/30 mt-1">
+                {selected.active ? 'Logica pronta, aguardando ativacao do webhook' : 'Sera desenvolvido nas proximas fases da consultoria'}
+              </p>
             </div>
           </div>
         </div>

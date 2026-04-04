@@ -232,3 +232,140 @@ export function calculateMCMV(grossIncome: number, propertyValue: number, _fgtsY
     eligible: propertyValue <= config.maxValue,
   }
 }
+
+// === DIÁRIO DE OBRA ===
+export interface DiaryEntry {
+  id: string
+  construction_id: string
+  date: string
+  weather: string | null
+  workers_present: number
+  activities: string
+  incidents: string | null
+  images: string[]
+  created_at: string
+}
+
+// === EQUIPE DE OBRA ===
+export type CrewRole = 'pedreiro' | 'servente' | 'eletricista' | 'encanador' | 'pintor' | 'mestre' | 'engenheiro' | 'outros'
+
+export interface CrewMember {
+  id: string
+  construction_id: string
+  name: string
+  role: string
+  daily_rate: number
+  days_worked: number
+  active: boolean
+  created_at: string
+}
+
+// === MATERIAIS POR OBRA ===
+export type ConstructionMaterialStatus = 'solicitado' | 'aprovado' | 'entregue' | 'usado'
+
+export interface ConstructionMaterial {
+  id: string
+  construction_id: string
+  material_id: string | null
+  material_name: string
+  quantity: number
+  unit_price: number
+  status: ConstructionMaterialStatus
+  requested_at: string
+  delivered_at: string | null
+}
+
+// === CENTRO DE CUSTOS ===
+export type CostCategory = 'mao_de_obra' | 'materiais' | 'equipamentos' | 'servicos' | 'outros'
+
+export interface ConstructionCost {
+  id: string
+  construction_id: string
+  category: CostCategory
+  description: string
+  planned_value: number
+  actual_value: number
+  date: string | null
+  created_at: string
+}
+
+// === MOVIMENTAÇÃO DE ESTOQUE ===
+export type StockMovementType = 'entrada' | 'saida' | 'ajuste' | 'devolucao'
+
+export interface StockMovement {
+  id: string
+  material_id: string
+  type: StockMovementType
+  quantity: number
+  reason: string | null
+  reference_id: string | null
+  created_at: string
+}
+
+// === PEDIDOS DE COMPRA ===
+export type PurchaseOrderStatus = 'rascunho' | 'enviado' | 'confirmado' | 'entregue' | 'cancelado'
+
+export interface PurchaseOrder {
+  id: string
+  supplier: string
+  status: PurchaseOrderStatus
+  total: number
+  expected_delivery: string | null
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface PurchaseOrderItem {
+  id: string
+  order_id: string
+  material_id: string | null
+  material_name: string
+  quantity: number
+  unit_price: number
+  created_at: string
+}
+
+// === ORÇAMENTOS ===
+export type QuoteStatus = 'rascunho' | 'enviado' | 'aprovado' | 'expirado'
+
+export interface Quote {
+  id: string
+  client_name: string
+  client_phone: string | null
+  status: QuoteStatus
+  total: number
+  valid_until: string | null
+  notes: string | null
+  created_at: string
+}
+
+export interface QuoteItem {
+  id: string
+  quote_id: string
+  material_id: string | null
+  material_name: string
+  quantity: number
+  unit_price: number
+  created_at: string
+}
+
+// === COST CATEGORIES CONFIG ===
+export const COST_CATEGORIES: Record<CostCategory, { label: string; color: string }> = {
+  mao_de_obra: { label: 'Mão de Obra', color: '#60a5fa' },
+  materiais: { label: 'Materiais', color: '#F5C518' },
+  equipamentos: { label: 'Equipamentos', color: '#a78bfa' },
+  servicos: { label: 'Serviços', color: '#34d399' },
+  outros: { label: 'Outros', color: '#9ca3af' },
+}
+
+export const CREW_ROLES: Record<string, string> = {
+  pedreiro: 'Pedreiro',
+  servente: 'Servente',
+  eletricista: 'Eletricista',
+  encanador: 'Encanador',
+  pintor: 'Pintor',
+  mestre: 'Mestre de Obras',
+  engenheiro: 'Engenheiro',
+  outros: 'Outros',
+}

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   CheckCircle, Rocket, Users, Calculator, Building2, MapPin, HardHat,
   Package, MessageSquare, Bot, Shield, Zap, Clock, ArrowRight,
-  Play, ChevronDown, Star, TrendingUp, Eye
+  Play, ChevronDown, Star, TrendingUp, Eye, Share2
 } from 'lucide-react'
 
 const fadeUp = {
@@ -17,36 +17,36 @@ const fadeUp = {
 const DELIVERABLES = [
   {
     icon: Calculator,
-    title: 'Agente Simulador MCMV',
-    desc: 'IA no WhatsApp que simula financiamento automaticamente, 24/7. Calcula faixa, subsidio, parcela e salva o lead no CRM.',
+    title: 'Simulador MCMV + Calculadora',
+    desc: 'Calculadora completa de financiamento MCMV 2026 integrada ao CRM. Calcula faixa, subsídio, taxa, parcela e salva no histórico do cliente.',
     color: '#F5C518',
     status: 'pronto',
   },
   {
     icon: Users,
     title: 'Pipeline CRM Inteligente',
-    desc: 'Kanban visual com 7 etapas: Novo Lead → Simulacao → Documentacao → Aprovado → Em Construcao → Entregue. Drag-and-drop.',
+    desc: 'Kanban visual com 7 etapas: Novo Lead → Simulação → Documentação → Aprovado → Em Construção → Entregue. Drag-and-drop.',
     color: '#a78bfa',
     status: 'pronto',
   },
   {
     icon: TrendingUp,
     title: 'Dashboard com KPIs',
-    desc: 'Visao geral do ecossistema: leads/mes, simulacoes, conversao, obras ativas, imoveis disponiveis. Tudo em tempo real.',
+    desc: 'Visão geral do ecossistema: leads/mês, simulações, conversão, obras ativas, imóveis disponíveis. Tudo em tempo real.',
     color: '#34d399',
     status: 'pronto',
   },
   {
     icon: Building2,
-    title: 'Catalogo de Imoveis',
-    desc: 'Todos os imoveis cadastrados com fotos, preco, bairro, filtros e indicador MCMV. Integrado ao CRM.',
+    title: 'Catálogo de Imóveis',
+    desc: 'Todos os imóveis cadastrados com preço, bairro, filtros e indicador MCMV. Integrado ao CRM.',
     color: '#60a5fa',
     status: 'pronto',
   },
   {
     icon: MapPin,
-    title: 'Gestao de Loteamentos',
-    desc: 'Controle visual de lotes: disponiveis, reservados, vendidos. Por quadra e loteamento.',
+    title: 'Gestão de Loteamentos',
+    desc: 'Controle visual de lotes: disponíveis, reservados, vendidos. Por quadra e loteamento.',
     color: '#f472b6',
     status: 'pronto',
   },
@@ -60,36 +60,36 @@ const DELIVERABLES = [
   {
     icon: Eye,
     title: 'Portal do Cliente',
-    desc: 'Pagina publica onde o cliente ve o progresso da SUA obra, fotos e atualizacoes. Link unico por obra.',
+    desc: 'Página pública onde o cliente vê o progresso da SUA obra, fotos e atualizações. Link único por obra.',
     color: '#22d3ee',
     status: 'pronto',
   },
   {
     icon: Package,
     title: 'Controle de Estoque',
-    desc: 'Gestao da loja de materiais: estoque, alertas de reposicao, valor em estoque, categorias.',
+    desc: 'Gestão da loja de materiais: estoque, alertas de reposição, valor em estoque, categorias.',
     color: '#c084fc',
     status: 'pronto',
   },
   {
     icon: Bot,
-    title: 'Painel de Agentes IA',
-    desc: '4 agentes especializados: Simulador, Corretor, Loteamento e Materiais. Cada um domina seu nicho.',
+    title: 'Agentes IA no WhatsApp',
+    desc: '4 agentes especializados planejados: Simulador, Corretor, Loteamento e Materiais. Lógica pronta, ativação na próxima fase.',
     color: '#F5C518',
-    status: 'pronto',
+    status: 'em_desenvolvimento',
   },
 ]
 
 const NEXT_STEPS = [
   'Ativar agente simulador MCMV no WhatsApp da TJA7',
-  'Cadastrar imoveis e lotes reais no sistema',
+  'Cadastrar imóveis e lotes reais no sistema',
   'Configurar equipe de vendedores no CRM',
-  'Treinar agentes com dados reais do negocio',
-  'Conectar dominio personalizado',
+  'Treinar agentes com dados reais do negócio',
+  'Conectar domínio personalizado',
 ]
 
 const STATS = [
-  { label: 'Paginas criadas', value: '10+' },
+  { label: 'Páginas criadas', value: '10+' },
   { label: 'Tabelas no banco', value: '9' },
   { label: 'Agentes IA', value: '4' },
   { label: 'Fases de obra', value: '7' },
@@ -126,7 +126,7 @@ export default function Apresentacao() {
           </div>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[10px] text-emerald-400">Em Desenvolvimento</span>
+            <span className="text-[10px] text-emerald-400">Operacional</span>
           </div>
         </div>
       </motion.header>
@@ -152,7 +152,7 @@ export default function Apresentacao() {
             transition={{ delay: 0.3 }}
             className="text-gold-400 text-sm font-medium tracking-widest uppercase mb-4"
           >
-            Consultoria de IA — Relatorio de Progresso
+            Consultoria de IA — Relatório de Progresso
           </motion.p>
 
           <motion.h1
@@ -163,7 +163,7 @@ export default function Apresentacao() {
           >
             Seu ecossistema
             <br />
-            <span className="text-shimmer">esta nascendo.</span>
+            <span className="text-shimmer">está nascendo.</span>
           </motion.h1>
 
           <motion.p
@@ -172,9 +172,9 @@ export default function Apresentacao() {
             transition={{ delay: 0.6 }}
             className="text-white/50 text-lg max-w-xl mx-auto mb-8"
           >
-            Em poucas horas, construimos a base completa do TJA7 Hub —
+            Em poucas horas, construímos a base completa do TJA7 Hub —
             um ecossistema inteligente que vai transformar a forma como
-            voce gerencia seus negocios.
+            você gerencia seus negócios.
           </motion.p>
 
           <motion.div
@@ -190,7 +190,7 @@ export default function Apresentacao() {
               <div className="w-10 h-10 rounded-full bg-black/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Play size={18} fill="currentColor" />
               </div>
-              Assistir Apresentacao
+              Assistir Apresentação
             </button>
             <a
               href="#entregas"
@@ -245,9 +245,9 @@ export default function Apresentacao() {
             custom={0}
             className="text-center mb-12"
           >
-            <p className="text-gold-400 text-sm font-medium tracking-widest uppercase mb-3">O que ja entregamos</p>
+            <p className="text-gold-400 text-sm font-medium tracking-widest uppercase mb-3">O que já entregamos</p>
             <h2 className="text-3xl md:text-4xl font-bold">
-              Tudo isso em <span className="gradient-text">um unico dia.</span>
+              Tudo isso em <span className="gradient-text">um único dia.</span>
             </h2>
           </motion.div>
 
@@ -271,9 +271,15 @@ export default function Apresentacao() {
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-1">
                     <h3 className="text-base font-semibold">{item.title}</h3>
-                    <span className="flex items-center gap-1 text-[10px] text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full">
-                      <CheckCircle size={10} /> Pronto
-                    </span>
+                    {item.status === 'pronto' ? (
+                      <span className="flex items-center gap-1 text-[10px] text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full">
+                        <CheckCircle size={10} /> Pronto
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1 text-[10px] text-gold-400 bg-gold-400/10 px-2 py-0.5 rounded-full">
+                        <Rocket size={10} /> Proxima fase
+                      </span>
+                    )}
                   </div>
                   <p className="text-sm text-white/50 leading-relaxed">{item.desc}</p>
                 </div>
@@ -315,13 +321,13 @@ export default function Apresentacao() {
             </div>
             <ChevronDown size={20} className="mx-auto text-white/20" />
             <div className="flex items-center justify-center gap-3 flex-wrap">
-              <span className="px-3 py-2 bg-purple-400/10 text-purple-400 rounded-xl">Supabase (Banco Unico)</span>
+              <span className="px-3 py-2 bg-purple-400/10 text-purple-400 rounded-xl">Supabase (Banco Único)</span>
             </div>
             <ChevronDown size={20} className="mx-auto text-white/20" />
             <div className="flex items-center justify-center gap-3 flex-wrap">
               <span className="px-3 py-2 bg-gold-400/10 text-gold-400 rounded-xl">TJA7 Hub</span>
               <span className="px-3 py-2 bg-cyan-400/10 text-cyan-400 rounded-xl">Portal Cliente</span>
-              <span className="px-3 py-2 bg-pink-400/10 text-pink-400 rounded-xl">Notificacoes</span>
+              <span className="px-3 py-2 bg-pink-400/10 text-pink-400 rounded-xl">Notificações</span>
             </div>
           </motion.div>
 
@@ -335,7 +341,7 @@ export default function Apresentacao() {
           >
             {[
               { icon: Shield, label: 'Dados seguros', desc: 'Criptografia e RLS' },
-              { icon: Zap, label: 'Resposta instantanea', desc: 'IA responde em segundos' },
+              { icon: Zap, label: 'Resposta instantânea', desc: 'IA responde em segundos' },
               { icon: Clock, label: '24/7 ativo', desc: 'Nunca perde um lead' },
             ].map((item) => (
               <div key={item.label} className="glass rounded-xl p-4 text-center">
@@ -359,7 +365,7 @@ export default function Apresentacao() {
             custom={0}
             className="text-center mb-12"
           >
-            <p className="text-gold-400 text-sm font-medium tracking-widest uppercase mb-3">Proximos passos</p>
+            <p className="text-gold-400 text-sm font-medium tracking-widest uppercase mb-3">Próximos passos</p>
             <h2 className="text-3xl font-bold">O que vem a seguir</h2>
           </motion.div>
 
@@ -397,19 +403,46 @@ export default function Apresentacao() {
         >
           <Star size={32} className="mx-auto text-gold-400 mb-4" />
           <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            Isso e so o <span className="gradient-text">comeco.</span>
+            Isso é só o <span className="gradient-text">começo.</span>
           </h2>
           <p className="text-white/50 mb-8">
             Vamos agendar nossa primeira call para eu te mostrar tudo funcionando
-            ao vivo e alinhar os proximos passos.
+            ao vivo e alinhar os próximos passos.
           </p>
           <a
-            href="https://wa.me/5588999033208?text=Oi%20R%C3%B4mulo%2C%20vi%20a%20apresenta%C3%A7%C3%A3o%20do%20TJA7%20Hub%20e%20quero%20agendar%20a%20call!"
+            href="https://wa.me/5588992050963?text=Oi%20R%C3%B4mulo%2C%20vi%20a%20apresenta%C3%A7%C3%A3o%20do%20TJA7%20Hub%20e%20quero%20agendar%20a%20call!"
             target="_blank"
             className="glow-button inline-flex items-center gap-3 px-8 py-4 rounded-2xl text-base"
           >
             <MessageSquare size={18} />
             Agendar Call
+          </a>
+        </motion.div>
+
+        {/* Share on Instagram */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeUp}
+          custom={1}
+          className="mt-12 glass rounded-2xl p-8 max-w-xl mx-auto text-center"
+        >
+          <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-orange-500/20 border border-pink-500/20 flex items-center justify-center">
+            <Share2 size={24} className="text-pink-400" />
+          </div>
+          <h3 className="text-lg font-bold mb-2">Compartilha essa evolução!</h3>
+          <p className="text-sm text-white/50 mb-4 leading-relaxed">
+            Posta nos stories ou no feed mostrando que a TJA7 tá inovando com IA.
+            Marca o <a href="https://instagram.com/romulojca" target="_blank" className="text-gold-400 hover:underline">@romulojca</a> pra eu repostar!
+          </p>
+          <a
+            href="https://instagram.com/romulojca"
+            target="_blank"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-orange-500/20 border border-pink-500/20 text-pink-300 hover:text-pink-200 transition-colors text-sm font-medium"
+          >
+            <Share2 size={16} />
+            @romulojca
           </a>
         </motion.div>
 
@@ -420,7 +453,7 @@ export default function Apresentacao() {
             <span className="text-xs text-white/30 font-medium">RC Digital</span>
           </div>
           <p className="text-[10px] text-white/15">
-            Consultoria de IA — Romulo Correia &copy; {new Date().getFullYear()}
+            Consultoria de IA — Rômulo Correia &copy; {new Date().getFullYear()}
           </p>
         </div>
       </section>
@@ -451,7 +484,7 @@ export default function Apresentacao() {
                 style={{ maxHeight: '80vh' }}
               />
               <p className="text-center text-white/30 text-xs mt-4">
-                Clique fora do video para fechar
+                Clique fora do vídeo para fechar
               </p>
             </motion.div>
           </motion.div>

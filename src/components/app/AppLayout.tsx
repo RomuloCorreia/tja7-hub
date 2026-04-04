@@ -3,10 +3,11 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import {
   LayoutDashboard, Users, Calculator, Building2, MapPin, HardHat,
-  Package, MessageSquare, Settings, LogOut, Menu, X, ChevronRight
+  Package, MessageSquare, Layers, LogOut, Menu, X, ChevronRight
 } from 'lucide-react'
 
 const nav = [
+  { to: '/app/ecossistema', icon: Layers, label: 'Ecossistema' },
   { to: '/app', icon: LayoutDashboard, label: 'Dashboard', end: true },
   { to: '/app/pipeline', icon: Users, label: 'Pipeline CRM' },
   { to: '/app/simulacoes', icon: Calculator, label: 'Simulacoes' },
@@ -58,13 +59,6 @@ export function AppLayout() {
         </nav>
 
         <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-white/5">
-          <NavLink
-            to="/app/config"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-white/40 hover:text-white/70 hover:bg-white/5 transition-all"
-          >
-            <Settings size={18} />
-            Configuracoes
-          </NavLink>
           <button
             onClick={signOut}
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-white/40 hover:text-red-400 hover:bg-white/5 transition-all w-full"

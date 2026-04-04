@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useClients } from '../../hooks/useClients'
 import { useSimulations } from '../../hooks/useSimulations'
 import { useConstructions } from '../../hooks/useConstructions'
@@ -18,6 +19,7 @@ import { PIPELINE_STAGES } from '../../types'
 const COLORS = ['#F5C518', '#a78bfa', '#34d399', '#60a5fa', '#f472b6', '#ef4444', '#9ca3af']
 
 export default function Dashboard() {
+  const navigate = useNavigate()
   const { clients, isLoading: loadingClients } = useClients()
   const { simulations } = useSimulations()
   const { constructions } = useConstructions()
@@ -177,13 +179,52 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Obras em andamento */}
+      {constructions.length > 0 && (
+        <div className="glass rounded-xl p-5">
+          <h3 className="text-sm font-medium mb-4 flex items-center gap-2">
+            <HardHat size={16} className="text-gold-400" />
+            Obras em Andamento
+          </h3>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {constructions.map(obra => (
+              <a
+                key={obra.id}
+                href={`/obra/${obra.id}`}
+                target="_blank"
+                className="bg-white/5 rounded-xl p-4 hover:bg-white/[0.08] transition-colors group"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-sm font-medium truncate">{obra.title}</p>
+                  <ArrowUpRight size={14} className="text-white/20 group-hover:text-gold-400 transition-colors" />
+                </div>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-gold-400 to-gold-500"
+                      style={{ width: `${obra.progress}%` }}
+                    />
+                  </div>
+                  <span className="text-xs text-gold-400 font-medium">{obra.progress}%</span>
+                </div>
+                <p className="text-[10px] text-white/40 capitalize">{obra.phase}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Recent leads */}
       <div className="glass rounded-xl p-5">
         <h3 className="text-sm font-medium mb-4">Leads Recentes</h3>
         {clients.length > 0 ? (
           <div className="space-y-2">
             {clients.slice(0, 8).map(client => (
-              <div key={client.id} className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white/5 transition-colors">
+              <div
+                key={client.id}
+                className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
+                onClick={() => navigate(`/app/cliente/${client.id}`)}
+              >
                 <div className="w-8 h-8 rounded-full bg-gold-400/10 flex items-center justify-center text-gold-400 text-xs font-bold">
                   {client.name.charAt(0).toUpperCase()}
                 </div>

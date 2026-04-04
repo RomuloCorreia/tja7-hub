@@ -1,48 +1,33 @@
-import { useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { supabase } from '../../lib/supabase'
+import { useState, useMemo } from 'react'
 import type { Material } from '../../types'
-import { Plus, Search, AlertTriangle, X, TrendingDown } from 'lucide-react'
-
-function useMaterials() {
-  const qc = useQueryClient()
-
-  const materialsQuery = useQuery({
-    queryKey: ['tja7_materials'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('tja7_materials').select('*').order('name')
-      if (error) throw error
-      return data as Material[]
-    },
-  })
-
-  const createMaterial = useMutation({
-    mutationFn: async (m: Partial<Material>) => {
-      const { data, error } = await supabase.from('tja7_materials').insert(m).select().single()
-      if (error) throw error
-      return data
-    },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['tja7_materials'] }),
-  })
-
-  const updateMaterial = useMutation({
-    mutationFn: async ({ id, ...updates }: Partial<Material> & { id: string }) => {
-      const { error } = await supabase.from('tja7_materials').update({ ...updates, updated_at: new Date().toISOString() }).eq('id', id)
-      if (error) throw error
-    },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['tja7_materials'] }),
-  })
-
-  return { materials: materialsQuery.data ?? [], isLoading: materialsQuery.isLoading, createMaterial, updateMaterial }
-}
+import { Plus, Search, AlertTriangle, X, TrendingDown, Minus, Check } from 'lucide-react'
+import { useMaterials } from '../../hooks/useMaterials'
 
 export default function Materiais() {
-  const { materials, isLoading, createMaterial } = useMaterials()
+  const { materials, isLoading, createMaterial, updateMaterial } = useMaterials()
   const [showNew, setShowNew] = useState(false)
   const [search, setSearch] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('todas')
+  const [editingMaterial, setEditingMaterial] = useState<Material | null>(null)
 
   const lowStock = materials.filter(m => m.stock_qty <= m.min_stock)
-  const filtered = materials.filter(m => !search || m.name.toLowerCase().includes(search.toLowerCase()) || m.category?.toLowerCase().includes(search.toLowerCase()))
+
+  // Extract unique categories
+  const categories = useMemo(() => {
+    const cats = [...new Set(materials.map(m => m.category).filter(Boolean))].sort()
+    return cats
+  }, [materials])
+
+  const filtered = materials.filter(m => {
+    const matchSearch = !search || m.name.toLowerCase().includes(search.toLowerCase()) || m.category?.toLowerCase().includes(search.toLowerCase())
+    const matchCategory = categoryFilter === 'todas' || m.category === categoryFilter
+    return matchSearch && matchCategory
+  })
+
+  const handleStockChange = async (material: Material, delta: number) => {
+    const newQty = Math.max(0, material.stock_qty + delta)
+    await updateMaterial.mutateAsync({ id: material.id, stock_qty: newQty })
+  }
 
   if (isLoading) {
     return <div className="flex items-center justify-center h-[60vh]"><div className="w-8 h-8 border-2 border-gold-400 border-t-transparent rounded-full animate-spin" /></div>
@@ -95,11 +80,23 @@ export default function Materiais() {
         </div>
       </div>
 
-      {/* Search */}
-      <div className="relative max-w-xs">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
-        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar material..."
-          className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-sm focus:border-gold-400/40 focus:outline-none" />
+      {/* Search + Category filter */}
+      <div className="flex items-center gap-3 flex-wrap">
+        <div className="relative flex-1 max-w-xs">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar material..."
+            className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-sm focus:border-gold-400/40 focus:outline-none" />
+        </div>
+        <select
+          value={categoryFilter}
+          onChange={e => setCategoryFilter(e.target.value)}
+          className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:border-gold-400/40 focus:outline-none text-white/60"
+        >
+          <option value="todas">Todas categorias</option>
+          {categories.map(cat => (
+            <option key={cat} value={cat}>{cat}</option>
+          ))}
+        </select>
       </div>
 
       {/* Table */}
@@ -116,25 +113,48 @@ export default function Materiais() {
             </tr>
           </thead>
           <tbody>
-            {filtered.map(m => (
-              <tr key={m.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    {m.stock_qty <= m.min_stock && <TrendingDown size={14} className="text-red-400" />}
-                    <span className="text-sm font-medium">{m.name}</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-xs text-white/40">{m.category}</td>
-                <td className="px-4 py-3 text-sm">R$ {m.price.toLocaleString('pt-BR')}</td>
-                <td className="px-4 py-3">
-                  <span className={`text-sm font-medium ${m.stock_qty <= m.min_stock ? 'text-red-400' : 'text-emerald-400'}`}>
-                    {m.stock_qty} {m.unit}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-xs text-white/40">{m.min_stock} {m.unit}</td>
-                <td className="px-4 py-3 text-xs text-white/40">{m.supplier ?? '-'}</td>
-              </tr>
-            ))}
+            {filtered.map(m => {
+              const isLow = m.stock_qty <= m.min_stock
+              return (
+                <tr
+                  key={m.id}
+                  className={`border-b border-white/5 hover:bg-white/[0.02] transition-colors cursor-pointer ${
+                    isLow ? 'bg-red-400/5 border-l-2 border-l-red-400' : ''
+                  }`}
+                  onClick={() => setEditingMaterial(m)}
+                >
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      {isLow && <TrendingDown size={14} className="text-red-400" />}
+                      <span className="text-sm font-medium">{m.name}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-xs text-white/40">{m.category}</td>
+                  <td className="px-4 py-3 text-sm">R$ {m.price.toLocaleString('pt-BR')}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+                      <button
+                        onClick={() => handleStockChange(m, -1)}
+                        className="w-6 h-6 rounded-md border border-white/10 flex items-center justify-center text-white/40 hover:text-white/80 hover:border-white/30 transition-colors"
+                      >
+                        <Minus size={12} />
+                      </button>
+                      <span className={`text-sm font-medium min-w-[3rem] text-center ${isLow ? 'text-red-400' : 'text-emerald-400'}`}>
+                        {m.stock_qty} {m.unit}
+                      </span>
+                      <button
+                        onClick={() => handleStockChange(m, 1)}
+                        className="w-6 h-6 rounded-md border border-white/10 flex items-center justify-center text-white/40 hover:text-white/80 hover:border-white/30 transition-colors"
+                      >
+                        <Plus size={12} />
+                      </button>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-xs text-white/40">{m.min_stock} {m.unit}</td>
+                  <td className="px-4 py-3 text-xs text-white/40">{m.supplier ?? '-'}</td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
         {filtered.length === 0 && (
@@ -153,10 +173,130 @@ export default function Materiais() {
           </div>
         </div>
       )}
+
+      {editingMaterial && (
+        <EditMaterialModal
+          material={editingMaterial}
+          onClose={() => setEditingMaterial(null)}
+          onSave={async (id, fields) => {
+            await updateMaterial.mutateAsync({ id, ...fields })
+            setEditingMaterial(null)
+          }}
+        />
+      )}
     </div>
   )
 }
 
+/* ============ EDIT MATERIAL MODAL ============ */
+function EditMaterialModal({
+  material,
+  onClose,
+  onSave,
+}: {
+  material: Material
+  onClose: () => void
+  onSave: (id: string, fields: Partial<Material>) => Promise<void>
+}) {
+  const [saved, setSaved] = useState(false)
+  const [form, setForm] = useState({
+    name: material.name,
+    category: material.category,
+    price: String(material.price),
+    cost: material.cost != null ? String(material.cost) : '',
+    unit: material.unit,
+    stock_qty: String(material.stock_qty),
+    min_stock: String(material.min_stock),
+    supplier: material.supplier ?? '',
+    sku: material.sku ?? '',
+  })
+
+  const handleSave = async () => {
+    await onSave(material.id, {
+      name: form.name,
+      category: form.category,
+      price: Number(form.price),
+      cost: form.cost ? Number(form.cost) : null,
+      unit: form.unit,
+      stock_qty: Number(form.stock_qty),
+      min_stock: Number(form.min_stock),
+      supplier: form.supplier || null,
+      sku: form.sku || null,
+    })
+    setSaved(true)
+    setTimeout(() => setSaved(false), 1000)
+  }
+
+  const inputClass = 'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:border-gold-400/40 focus:outline-none'
+  const labelClass = 'text-xs text-white/40 mb-1 block'
+
+  return (
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <div className="glass rounded-2xl w-full max-w-lg p-6 space-y-4 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <h2 className="text-lg font-bold">Editar Material</h2>
+            {saved && <span className="text-xs text-emerald-400 flex items-center gap-1"><Check size={14} /> Salvo!</span>}
+          </div>
+          <button onClick={onClose} className="text-white/40 hover:text-white/80"><X size={20} /></button>
+        </div>
+        <div className="space-y-3">
+          <div>
+            <label className={labelClass}>Nome</label>
+            <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className={inputClass} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className={labelClass}>Categoria</label>
+              <input value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>SKU</label>
+              <input value={form.sku} onChange={e => setForm({ ...form, sku: e.target.value })} className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Preco venda (R$)</label>
+              <input type="number" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Custo (R$)</label>
+              <input type="number" value={form.cost} onChange={e => setForm({ ...form, cost: e.target.value })} className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Unidade</label>
+              <select value={form.unit} onChange={e => setForm({ ...form, unit: e.target.value })} className={inputClass}>
+                <option value="un">Unidade</option>
+                <option value="kg">Kg</option>
+                <option value="m">Metro</option>
+                <option value="m2">m2</option>
+                <option value="saco">Saco</option>
+                <option value="lata">Lata</option>
+              </select>
+            </div>
+            <div>
+              <label className={labelClass}>Fornecedor</label>
+              <input value={form.supplier} onChange={e => setForm({ ...form, supplier: e.target.value })} className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Qtd. estoque</label>
+              <input type="number" value={form.stock_qty} onChange={e => setForm({ ...form, stock_qty: e.target.value })} className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass}>Estoque minimo</label>
+              <input type="number" value={form.min_stock} onChange={e => setForm({ ...form, min_stock: e.target.value })} className={inputClass} />
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-3">
+          <button onClick={handleSave} className="glow-button flex-1 py-2.5 rounded-xl text-sm">Salvar</button>
+          <button onClick={onClose} className="border border-white/10 text-white/40 hover:text-white/70 px-4 py-2.5 rounded-xl text-sm">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ============ NEW MATERIAL FORM ============ */
 function NewMaterialForm({ onSave }: { onSave: (d: Partial<Material>) => void }) {
   const [form, setForm] = useState({ name: '', category: '', price: '', stock_qty: '', min_stock: '', unit: 'un', supplier: '' })
 

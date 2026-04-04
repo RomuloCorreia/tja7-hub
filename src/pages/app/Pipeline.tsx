@@ -1,9 +1,10 @@
 import { useState, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd'
 import { useClients } from '../../hooks/useClients'
 import { PIPELINE_STAGES, type ClientStage, type Client } from '../../types'
 import {
-  Search, Plus, Phone, Mail, Calendar,
+  Search, Plus, Phone,
   Trash2, GripVertical, LayoutGrid, List, X
 } from 'lucide-react'
 import { format } from 'date-fns'
@@ -18,7 +19,7 @@ export default function Pipeline() {
   const [view, setView] = useState<View>('kanban')
   const [search, setSearch] = useState('')
   const [showNewModal, setShowNewModal] = useState(false)
-  const [selected, setSelected] = useState<Client | null>(null)
+  const navigate = useNavigate()
 
   const filtered = useMemo(() => {
     if (!search) return clients
@@ -125,7 +126,7 @@ export default function Pipeline() {
                                 ref={dragProvided.innerRef}
                                 {...dragProvided.draggableProps}
                                 className="glass rounded-xl p-3 cursor-pointer hover:border-gold-400/20 transition-colors group"
-                                onClick={() => setSelected(client)}
+                                onClick={() => navigate(`/app/cliente/${client.id}`)}
                               >
                                 <div className="flex items-start gap-2">
                                   <div {...dragProvided.dragHandleProps} className="mt-1 text-white/20 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -192,7 +193,7 @@ export default function Pipeline() {
                 <tr
                   key={client.id}
                   className="border-b border-white/5 hover:bg-white/[0.02] cursor-pointer transition-colors"
-                  onClick={() => setSelected(client)}
+                  onClick={() => navigate(`/app/cliente/${client.id}`)}
                 >
                   <td className="px-4 py-3 text-sm font-medium">{client.name}</td>
                   <td className="px-4 py-3 text-sm text-white/60">{client.phone}</td>
@@ -220,7 +221,12 @@ export default function Pipeline() {
                   </td>
                   <td className="px-4 py-3">
                     <button
-                      onClick={e => { e.stopPropagation(); deleteClient.mutate(client.id) }}
+                      onClick={e => {
+                        e.stopPropagation()
+                        if (confirm(`Remover ${client.name} do pipeline?`)) {
+                          deleteClient.mutate(client.id)
+                        }
+                      }}
                       className="text-white/20 hover:text-red-400 transition-colors"
                     >
                       <Trash2 size={14} />
@@ -239,8 +245,6 @@ export default function Pipeline() {
       {/* New Lead Modal */}
       {showNewModal && <NewLeadModal onClose={() => setShowNewModal(false)} onSave={handleCreateClient} />}
 
-      {/* Detail Modal */}
-      {selected && <ClientDetailModal client={selected} onClose={() => setSelected(null)} />}
     </div>
   )
 }
@@ -339,78 +343,3 @@ function NewLeadModal({ onClose, onSave }: { onClose: () => void; onSave: (data:
   )
 }
 
-// === Client Detail Modal ===
-function ClientDetailModal({ client, onClose }: { client: Client; onClose: () => void }) {
-  return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="glass rounded-2xl w-full max-w-lg p-6 space-y-4 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold">{client.name}</h2>
-          <button onClick={onClose} className="text-white/40 hover:text-white/80"><X size={20} /></button>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          {client.phone && (
-            <div className="flex items-center gap-2 text-sm text-white/60">
-              <Phone size={14} className="text-gold-400" />
-              <a href={`https://wa.me/55${client.phone.replace(/\D/g, '')}`} target="_blank" className="hover:text-gold-400">
-                {client.phone}
-              </a>
-            </div>
-          )}
-          {client.email && (
-            <div className="flex items-center gap-2 text-sm text-white/60">
-              <Mail size={14} className="text-gold-400" />
-              {client.email}
-            </div>
-          )}
-          <div className="flex items-center gap-2 text-sm text-white/60">
-            <Calendar size={14} className="text-gold-400" />
-            {format(new Date(client.created_at), "dd/MM/yyyy 'as' HH:mm", { locale: ptBR })}
-          </div>
-        </div>
-
-        <div>
-          <p className="text-xs text-white/40 mb-2">Etapa</p>
-          <span
-            className="text-sm px-3 py-1.5 rounded-full font-medium"
-            style={{
-              background: `${PIPELINE_STAGES[client.stage]?.color}15`,
-              color: PIPELINE_STAGES[client.stage]?.color,
-            }}
-          >
-            {PIPELINE_STAGES[client.stage]?.label}
-          </span>
-        </div>
-
-        {client.interests?.length > 0 && (
-          <div>
-            <p className="text-xs text-white/40 mb-2">Interesses</p>
-            <div className="flex flex-wrap gap-2">
-              {client.interests.map(i => (
-                <span key={i} className="text-xs px-2 py-1 bg-gold-400/10 text-gold-400 rounded-lg">{i}</span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {client.notes && (
-          <div>
-            <p className="text-xs text-white/40 mb-2">Notas</p>
-            <p className="text-sm text-white/70 bg-white/5 rounded-xl p-3">{client.notes}</p>
-          </div>
-        )}
-
-        <div className="flex gap-2 pt-2">
-          <a
-            href={`https://wa.me/55${client.phone?.replace(/\D/g, '')}`}
-            target="_blank"
-            className="glow-button px-4 py-2 rounded-xl text-sm flex-1 text-center"
-          >
-            WhatsApp
-          </a>
-        </div>
-      </div>
-    </div>
-  )
-}
