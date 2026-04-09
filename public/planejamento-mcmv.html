@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TJA7 — Planejamento MCMV Sem Entrada</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #06060a; color: #fff; min-height: 100vh; }
+    .container { max-width: 480px; margin: 0 auto; padding: 20px; }
+
+    .header { text-align: center; padding: 30px 0 20px; }
+    .header img { height: 40px; margin-bottom: 16px; }
+    .header h1 { font-size: 20px; font-weight: 900; color: #F5C518; }
+    .header p { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 4px; text-transform: uppercase; letter-spacing: 2px; }
+
+    .section { margin-top: 24px; }
+    .section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.3); font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+    .section-title .dot { width: 6px; height: 6px; border-radius: 50%; background: #F5C518; }
+
+    .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 20px; margin-bottom: 12px; }
+
+    .flow { display: flex; flex-direction: column; gap: 0; }
+    .flow-step { display: flex; align-items: flex-start; gap: 12px; position: relative; padding-bottom: 20px; }
+    .flow-step:last-child { padding-bottom: 0; }
+    .flow-step::before { content: ''; position: absolute; left: 15px; top: 32px; bottom: 0; width: 2px; background: rgba(255,255,255,0.06); }
+    .flow-step:last-child::before { display: none; }
+    .flow-number { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0; z-index: 1; }
+    .flow-number.gold { background: rgba(245,197,24,0.15); color: #F5C518; border: 1px solid rgba(245,197,24,0.3); }
+    .flow-number.green { background: rgba(34,197,94,0.15); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+    .flow-number.blue { background: rgba(59,130,246,0.15); color: #3b82f6; border: 1px solid rgba(59,130,246,0.3); }
+    .flow-content h3 { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+    .flow-content p { font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.5; }
+    .flow-content .highlight { color: #F5C518; font-weight: 700; }
+    .flow-content .green-text { color: #22c55e; font-weight: 700; }
+
+    .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .profile-item { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 10px; }
+    .profile-item .pi-label { font-size: 9px; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 1px; }
+    .profile-item .pi-value { font-size: 13px; font-weight: 700; margin-top: 2px; }
+    .profile-item .pi-value.gold { color: #F5C518; }
+
+    .formula { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 16px; margin-top: 12px; }
+    .formula .line { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .formula .line:last-child { border-bottom: none; }
+    .formula .line.total { padding-top: 10px; margin-top: 4px; border-top: 2px solid rgba(255,255,255,0.08); border-bottom: none; }
+    .formula .line .label { color: rgba(255,255,255,0.4); font-size: 12px; }
+    .formula .line .val { font-weight: 700; font-size: 12px; }
+    .formula .line .val.blue { color: #60a5fa; }
+    .formula .line .val.green { color: #4ade80; }
+    .formula .line .val.gold { color: #F5C518; }
+    .formula .line .val.red { color: #f87171; }
+    .formula .line .val.dim { color: rgba(255,255,255,0.25); }
+
+    .stacked-bar { height: 44px; border-radius: 10px; display: flex; overflow: hidden; margin: 12px 0 8px; }
+    .stacked-bar .segment { display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; }
+    .stacked-bar .seg-finance { background: rgba(59,130,246,0.25); color: #93c5fd; }
+    .stacked-bar .seg-subsidy { background: rgba(34,197,94,0.25); color: #86efac; }
+    .stacked-bar .seg-entry { background: rgba(239,68,68,0.2); color: #fca5a5; }
+    .stacked-bar .seg-zero { background: rgba(34,197,94,0.15); color: #86efac; border: 1px dashed rgba(34,197,94,0.3); }
+
+    .legend { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 4px; font-size: 10px; color: rgba(255,255,255,0.4); }
+    .legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+    .result-box { border-radius: 16px; padding: 20px; text-align: center; margin-top: 16px; }
+    .result-box.success { background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.02)); border: 1px solid rgba(34,197,94,0.2); }
+    .result-box.warning { background: linear-gradient(135deg, rgba(239,68,68,0.06), rgba(239,68,68,0.02)); border: 1px solid rgba(239,68,68,0.15); }
+    .result-box .emoji { font-size: 32px; margin-bottom: 8px; }
+    .result-box h3 { font-size: 16px; font-weight: 800; }
+    .result-box h3.green { color: #22c55e; }
+    .result-box h3.red { color: #f87171; }
+    .result-box p { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 6px; line-height: 1.5; }
+    .result-box .big-number { font-size: 28px; font-weight: 900; margin: 8px 0; }
+
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+    .comp-card { border-radius: 12px; padding: 16px; text-align: center; }
+    .comp-card.before { background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.15); }
+    .comp-card.after { background: rgba(34,197,94,0.05); border: 1px solid rgba(34,197,94,0.15); }
+    .comp-card .label { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.3); margin-bottom: 6px; }
+    .comp-card .value { font-size: 20px; font-weight: 900; }
+    .comp-card .sub { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 4px; }
+    .comp-card.before .value { color: #f87171; }
+    .comp-card.after .value { color: #22c55e; }
+
+    .insight { background: rgba(245,197,24,0.05); border: 1px solid rgba(245,197,24,0.15); border-radius: 12px; padding: 16px; margin-top: 16px; text-align: center; }
+    .insight .icon { font-size: 24px; margin-bottom: 8px; }
+    .insight p { font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.6; }
+    .insight strong { color: #F5C518; }
+
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; }
+    .badge.gold { background: rgba(245,197,24,0.1); color: #F5C518; border: 1px solid rgba(245,197,24,0.2); }
+
+    .arrow-down { text-align: center; padding: 8px 0; font-size: 18px; color: rgba(255,255,255,0.15); }
+
+    .cta { display: block; width: 100%; padding: 16px; border-radius: 14px; text-align: center; font-size: 14px; font-weight: 800; text-decoration: none; margin-top: 24px; transition: transform 0.1s; }
+    .cta:active { transform: scale(0.98); }
+    .cta.primary { background: linear-gradient(135deg, #F5C518, #d4a410); color: #06060a; }
+    .cta.secondary { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.06); margin-top: 8px; font-weight: 600; font-size: 12px; }
+
+    .divider { height: 1px; background: rgba(255,255,255,0.04); margin: 24px 0; }
+
+    .footer { text-align: center; padding: 24px 0; }
+    .footer p { font-size: 10px; color: rgba(255,255,255,0.15); line-height: 1.6; }
+
+    .vs-badge { display: inline-block; background: rgba(255,255,255,0.05); border-radius: 20px; padding: 4px 16px; font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.2); margin: 8px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Header -->
+    <div class="header">
+      <img src="/img/tja7-logo.png" alt="TJA7">
+      <h1>Casa Própria Sem Entrada</h1>
+      <p>Estratégia TJA7 — MCMV 2026</p>
+    </div>
+
+    <!-- A Estratégia -->
+    <div class="section">
+      <div class="section-title"><span class="dot"></span> A estratégia</div>
+      <div class="card">
+        <div class="insight" style="margin-top: 0;">
+          <div class="icon">💡</div>
+          <p>
+            A Caixa avalia o imóvel no <strong>teto municipal (R$ 210.000)</strong>, mas a casa na planta <strong>custa menos</strong>. Os 80% do financiamento + subsídio podem cobrir o custo real — <strong>zerando a entrada</strong>.
+          </p>
+        </div>
+
+        <div class="flow" style="margin-top: 20px;">
+          <div class="flow-step">
+            <div class="flow-number gold">1</div>
+            <div class="flow-content">
+              <h3>Caixa avalia em R$ 210.000</h3>
+              <p>Teto municipal de Icó para Faixa 1 e 2</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-number blue">2</div>
+            <div class="flow-content">
+              <h3>Financia 80% = R$ 168.000</h3>
+              <p>Valor que a Caixa deposita direto na construtora</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-number green">3</div>
+            <div class="flow-content">
+              <h3>Subsídio cobre o que falta</h3>
+              <p>Se casa custa R$ 178.000, faltam R$ 10.000 → <span class="green-text">subsídio paga!</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Perfil exemplo -->
+    <div class="section">
+      <div class="section-title"><span class="dot"></span> Exemplo — Perfil do cliente</div>
+
+      <div class="profile-grid">
+        <div class="profile-item">
+          <div class="pi-label">Renda mensal</div>
+          <div class="pi-value gold">R$ 2.710</div>
+        </div>
+        <div class="profile-item">
+          <div class="pi-label">Idade</div>
+          <div class="pi-value">28 anos</div>
+        </div>
+        <div class="profile-item">
+          <div class="pi-label">FGTS</div>
+          <div class="pi-value">3+ anos ✓</div>
+        </div>
+        <div class="profile-item">
+          <div class="pi-label">Dependentes</div>
+          <div class="pi-value">Sim ✓</div>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 12px;">
+        <span class="badge gold">MCMV Faixa 1 — Icó/CE</span>
+      </div>
+    </div>
+
+    <!-- SEM estratégia -->
+    <div class="section">
+      <div class="section-title"><span class="dot"></span> ❌ Financiamento pelo valor real (sem estratégia)</div>
+      <div class="card">
+        <p style="font-size: 11px; color: rgba(255,255,255,0.3); margin-bottom: 12px;">Se financiar direto pelo custo da casa:</p>
+
+        <div class="formula">
+          <div class="line"><span class="label">Casa custa</span><span class="val">R$ 178.000</span></div>
+          <div class="line"><span class="label">Caixa financia 80%</span><span class="val blue">R$ 142.400</span></div>
+          <div class="line"><span class="label">Falta pagar (20%)</span><span class="val">R$ 35.600</span></div>
+          <div class="line"><span class="label">Subsídio estimado</span><span class="val green">- R$ 10.000</span></div>
+          <div class="line total"><span class="label">⚠️ Entrada necessária</span><span class="val red">R$ 25.600</span></div>
+        </div>
+
+        <div class="stacked-bar">
+          <div class="segment seg-finance" style="width: 80%;">Financ. R$ 142.400</div>
+          <div class="segment seg-subsidy" style="width: 5.6%;">Sub</div>
+          <div class="segment seg-entry" style="width: 14.4%;">Entrada!</div>
+        </div>
+
+        <div class="result-box warning">
+          <div class="emoji">😔</div>
+          <h3 class="red">Entrada de R$ 25.600</h3>
+          <p>Cliente pode desistir por não ter esse valor</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow-down">↓</div>
+    <div style="text-align: center;"><span class="vs-badge">VS</span></div>
+    <div class="arrow-down">↓</div>
+
+    <!-- COM estratégia TJA7 -->
+    <div class="section">
+      <div class="section-title"><span class="dot"></span> ✅ Estratégia TJA7 (avaliação pelo teto)</div>
+      <div class="card">
+        <p style="font-size: 11px; color: rgba(255,255,255,0.3); margin-bottom: 12px;">Se a Caixa avalia pelo teto municipal:</p>
+
+        <div class="formula">
+          <div class="line"><span class="label">Caixa avalia em (teto Icó)</span><span class="val gold">R$ 210.000</span></div>
+          <div class="line"><span class="label">Caixa financia 80% da avaliação</span><span class="val blue">R$ 168.000</span></div>
+        </div>
+
+        <div class="arrow-down">↓</div>
+
+        <div class="formula">
+          <div class="line"><span class="label">Casa custa (real)</span><span class="val">R$ 178.000</span></div>
+          <div class="line"><span class="label">Financiamento recebido</span><span class="val blue">- R$ 168.000</span></div>
+          <div class="line"><span class="label">Falta pagar</span><span class="val">R$ 10.000</span></div>
+          <div class="line"><span class="label">Subsídio estimado</span><span class="val green">- R$ 10.000</span></div>
+          <div class="line total"><span class="label">✅ Entrada</span><span class="val green" style="font-size: 18px;">R$ 0</span></div>
+        </div>
+
+        <div class="stacked-bar">
+          <div class="segment seg-finance" style="width: 80%;">Financ. R$ 168.000</div>
+          <div class="segment seg-subsidy" style="width: 20%;">Subs. R$ 10.000</div>
+        </div>
+
+        <p style="font-size: 10px; color: rgba(255,255,255,0.2); text-align: center; margin-top: 4px;">
+          Financiamento + Subsídio = R$ 178.000 = Custo real da casa ✓
+        </p>
+
+        <div class="result-box success">
+          <div class="emoji">🎉</div>
+          <h3 class="green">ENTRADA ZERO!</h3>
+          <p class="big-number" style="color: #22c55e;">R$ 0,00</p>
+          <p>O financiamento (80% da avaliação) + subsídio cobre 100% do custo real da casa</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comparação -->
+    <div class="section">
+      <div class="section-title"><span class="dot"></span> Comparação</div>
+      <div class="comparison">
+        <div class="comp-card before">
+          <div class="label">Sem estratégia</div>
+          <div class="value">R$ 25.600</div>
+          <div class="sub">de entrada</div>
+          <div style="margin-top: 8px; font-size: 10px; color: rgba(255,255,255,0.2);">80% de R$ 178k</div>
+          <div style="font-size: 10px; color: rgba(255,255,255,0.2);">= R$ 142.400 financiado</div>
+        </div>
+        <div class="comp-card after">
+          <div class="label">Estratégia TJA7</div>
+          <div class="value">R$ 0</div>
+          <div class="sub">de entrada!</div>
+          <div style="margin-top: 8px; font-size: 10px; color: rgba(255,255,255,0.2);">80% de R$ 210k</div>
+          <div style="font-size: 10px; color: rgba(255,255,255,0.2);">= R$ 168.000 financiado</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fórmula -->
+    <div class="section">
+      <div class="section-title"><span class="dot"></span> A lógica</div>
+      <div class="card" style="text-align: center;">
+        <div style="background: rgba(245,197,24,0.05); border: 1px solid rgba(245,197,24,0.15); border-radius: 12px; padding: 16px;">
+          <p style="font-size: 10px; color: rgba(255,255,255,0.3); margin-bottom: 8px;">ENTRADA DO CLIENTE</p>
+          <p style="font-size: 16px; font-weight: 900; color: #F5C518;">
+            Entrada = Custo Casa - (Teto × 80%) - Subsídio
+          </p>
+        </div>
+
+        <div class="formula" style="text-align: left;">
+          <div class="line"><span class="label">Custo real da casa</span><span class="val">R$ 178.000</span></div>
+          <div class="line"><span class="label">Teto × 80% (R$ 210k × 0.80)</span><span class="val blue">- R$ 168.000</span></div>
+          <div class="line"><span class="label">Gap</span><span class="val">R$ 10.000</span></div>
+          <div class="line"><span class="label">Subsídio do perfil</span><span class="val green">- R$ 10.000</span></div>
+          <div class="line total"><span class="label">Entrada</span><span class="val green" style="font-size: 16px;">R$ 0 ✅</span></div>
+        </div>
+
+        <p style="font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 16px; line-height: 1.6;">
+          <strong style="color: rgba(255,255,255,0.5);">Custo máximo da casa sem entrada:</strong><br>
+          <span style="font-size: 14px; color: #F5C518; font-weight: 800;">R$ 168.000 + Subsídio</span><br>
+          <span style="font-size: 10px;">(teto × 80%) + subsídio do perfil</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Quando funciona -->
+    <div class="section">
+      <div class="section-title"><span class="dot"></span> Quando funciona?</div>
+      <div class="card">
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; gap: 10px; align-items: flex-start;">
+            <span style="color: #22c55e; font-size: 14px;">✅</span>
+            <div>
+              <p style="font-size: 12px; font-weight: 700;">Subsídio cobre o gap</p>
+              <p style="font-size: 11px; color: rgba(255,255,255,0.3);">Casa ≤ R$ 168.000 + subsídio → <strong style="color: #22c55e;">entrada zero</strong></p>
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; align-items: flex-start;">
+            <span style="color: #F5C518; font-size: 14px;">⚠️</span>
+            <div>
+              <p style="font-size: 12px; font-weight: 700;">Subsídio cobre parcial</p>
+              <p style="font-size: 11px; color: rgba(255,255,255,0.3);">Casa entre R$ 168k e R$ 210k, subsídio reduz a entrada</p>
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; align-items: flex-start;">
+            <span style="color: #f87171; font-size: 14px;">❌</span>
+            <div>
+              <p style="font-size: 12px; font-weight: 700;">Sem subsídio (Faixa 3 e 4)</p>
+              <p style="font-size: 11px; color: rgba(255,255,255,0.3);">Entrada = custo real - R$ 168.000 (sempre precisa de entrada)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- O que a Carol pergunta -->
+    <div class="section">
+      <div class="section-title"><span class="dot"></span> O que a Carol pergunta</div>
+      <div class="card">
+        <div class="flow">
+          <div class="flow-step">
+            <div class="flow-number gold">💬</div>
+            <div class="flow-content">
+              <h3>"Você já tem um imóvel em vista?"</h3>
+              <p><strong>Se sim</strong> → calcula se entrada zero é possível com aquele valor<br><strong>Se não</strong> → calcula o valor máximo sem entrada pro perfil dele</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-number gold">💬</div>
+            <div class="flow-content">
+              <h3>Renda, tipo de renda, FGTS, idade, dependentes</h3>
+              <p>Cada dado influencia no subsídio e na taxa de juros</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-number green">📊</div>
+            <div class="flow-content">
+              <h3>Resultado: "Você pode comprar sem entrada!"</h3>
+              <p>Ou: "Com esse perfil, a entrada fica em apenas R$ X"</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <a href="https://wa.me/5588997454861" class="cta primary">
+      Falar com Eng. Jenucíê
+    </a>
+    <a href="https://tja7-hub.vercel.app" class="cta secondary">
+      Acessar TJA7 Hub
+    </a>
+
+    <div class="footer">
+      <img src="/img/tja7-logo.png" alt="TJA7" style="height: 28px; opacity: 0.3; margin-bottom: 12px;">
+      <p>
+        Valores estimados sujeitos à análise de crédito da Caixa Econômica Federal.<br>
+        TJA7 Empreendimentos — Icó/CE — CRECI-CE 17.398-F
+      </p>
+    </div>
+  </div>
+</body>
+</html>

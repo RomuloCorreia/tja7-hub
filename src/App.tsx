@@ -8,6 +8,10 @@ import LoginPage from './pages/app/LoginPage'
 import Dashboard from './pages/app/Dashboard'
 import Pipeline from './pages/app/Pipeline'
 import SimuladorMCMV from './pages/app/SimuladorMCMV'
+import CorrespondenteLayout from './pages/app/correspondente/CorrespondenteLayout'
+import CorrespondenteOverview from './pages/app/correspondente/CorrespondenteOverview'
+import CorrespondenteWhatsApp from './pages/app/correspondente/CorrespondenteWhatsApp'
+import CorrespondenteLeads from './pages/app/correspondente/CorrespondenteLeads'
 import Imoveis from './pages/app/Imoveis'
 import LotesLayout from './pages/app/lotes/LotesLayout'
 import LoteamentosLista from './pages/app/lotes/LoteamentosLista'
@@ -25,6 +29,7 @@ import ClientePage from './pages/app/ClientePage'
 import PortalCliente from './pages/public/PortalCliente'
 import Apresentacao from './pages/public/Apresentacao'
 import CaseTJA7 from './pages/public/CaseTJA7'
+import SimulacaoReport from './pages/public/SimulacaoReport'
 import MaterialTV from './pages/public/MaterialTV'
 
 const queryClient = new QueryClient({
@@ -45,12 +50,18 @@ export default function App() {
             <Route path="/apresentacao" element={<Apresentacao />} />
             <Route path="/materiais/tv" element={<MaterialTV />} />
             <Route path="/case" element={<CaseTJA7 />} />
+            <Route path="/simulacao/:id" element={<SimulacaoReport />} />
 
             {/* Protected app routes */}
             <Route path="/app" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
               <Route index element={<Dashboard />} />
               <Route path="pipeline" element={<Pipeline />} />
-              <Route path="simulacoes" element={<SimuladorMCMV />} />
+              <Route path="correspondente" element={<CorrespondenteLayout />}>
+                <Route index element={<CorrespondenteOverview />} />
+                <Route path="simulador" element={<SimuladorMCMV />} />
+                <Route path="whatsapp" element={<CorrespondenteWhatsApp />} />
+                <Route path="leads" element={<CorrespondenteLeads />} />
+              </Route>
               <Route path="imoveis" element={<Imoveis />} />
               <Route path="lotes" element={<LotesLayout />}>
                 <Route index element={<LoteamentosLista />} />

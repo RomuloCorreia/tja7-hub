@@ -68,10 +68,10 @@ interface SimulationResult {
 const MCMV_CONFIG: Record<MCMVFaixa, {
   maxIncome: number; maxSubsidy: number; baseRate: number; maxRate: number; maxValue: number
 }> = {
-  '1': { maxIncome: 2850, maxSubsidy: 55000, baseRate: 4.00, maxRate: 4.25, maxValue: 190000 },
-  '2': { maxIncome: 4700, maxSubsidy: 40000, baseRate: 4.75, maxRate: 5.25, maxValue: 264000 },
-  '3': { maxIncome: 8600, maxSubsidy: 0, baseRate: 7.66, maxRate: 7.66, maxValue: 350000 },
-  '4': { maxIncome: 12000, maxSubsidy: 0, baseRate: 8.16, maxRate: 8.16, maxValue: 500000 },
+  '1': { maxIncome: 2850, maxSubsidy: 55000, baseRate: 4.00, maxRate: 4.75, maxValue: 210000 },
+  '2': { maxIncome: 4700, maxSubsidy: 40000, baseRate: 4.75, maxRate: 7.00, maxValue: 210000 },
+  '3': { maxIncome: 8600, maxSubsidy: 0, baseRate: 7.66, maxRate: 8.16, maxValue: 350000 },
+  '4': { maxIncome: 12000, maxSubsidy: 0, baseRate: 10.50, maxRate: 10.50, maxValue: 500000 },
 }
 
 // ============================================
@@ -85,24 +85,95 @@ function determineFaixa(grossIncome: number): MCMVFaixa {
   return '4'
 }
 
-function calculateSubsidy(faixa: MCMVFaixa, grossIncome: number, propertyValue: number, hadSubsidy: boolean): number {
-  if (hadSubsidy) return 0
-  const config = MCMV_CONFIG[faixa]
-  if (config.maxSubsidy === 0) return 0
-  // Subsidio proporcional: quanto menor a renda, maior o percentual
-  const incomeRatio = 1 - (grossIncome / config.maxIncome)
-  const subsidyPercent = 0.4 + (incomeRatio * 0.6) // 40% a 100% do max
-  const baseSubsidy = config.maxSubsidy * subsidyPercent
-  // Nao pode ultrapassar 30% do valor do imovel
-  return Math.round(Math.min(baseSubsidy, propertyValue * 0.30))
+// ============================================
+// SUBSIDIO MCMV 2026 — Formula calibrada com Simulador Caixa
+// Usa faixas de renda proprias (2640/4400), separadas das faixas de juros (2850/4700)
+// Baseado em: Resolucao CCFGTS, Portaria MCID, Grupo IV (municipios < 100k hab)
+// Calibrado com dados reais do simulador Caixa para ICO-CE (06/04/2026):
+//   - R$1.911 Faixa1 → R$33.030  |  R$3.000 Faixa2 → R$5.653
+// ============================================
+
+// Tetos de subsidio por grupo de municipio (Icó = Grupo IV)
+const SUBSIDY_CONFIG = {
+  // Faixa Subsidio 1: renda ate R$2.640
+  faixa1: {
+    rendaMin: 1500,    // piso para interpolacao
+    rendaMax: 2640,    // teto da faixa subsidio 1
+    tetoGrupoIV: 47000, // subsidio maximo base (interior <100k hab)
+    bonusFGTS: 3000,    // bonus por 3+ anos FGTS
+    bonusDependentes: 1500, // bonus por multiplos compradores/dependentes
+  },
+  // Faixa Subsidio 2: renda R$2.640,01 a R$4.400
+  faixa2: {
+    rendaMin: 2640,
+    rendaMax: 4400,    // acima disso, sem subsidio
+    tetoGrupoIV: 7100,  // subsidio maximo base (interior <100k hab)
+    bonusFGTS: 0,       // sem bonus FGTS na faixa 2
+    bonusDependentes: 0,
+  },
 }
 
-function getNominalRate(faixa: MCMVFaixa, hasFGTS: boolean, caixaRelationship: boolean): number {
-  const config = MCMV_CONFIG[faixa]
-  let rate = config.maxRate
-  if (hasFGTS) rate = Math.max(config.baseRate, rate - 0.50)
-  if (caixaRelationship) rate = Math.max(config.baseRate, rate - 0.50)
-  return rate
+function calculateSubsidy(
+  _faixa: MCMVFaixa,
+  grossIncome: number,
+  propertyValue: number,
+  hadSubsidy: boolean,
+  hasMultipleBuyers: boolean,
+  hasFGTS3Years: boolean,
+): number {
+  if (hadSubsidy) return 0
+
+  let subsidioBase = 0
+  let bonus = 0
+
+  if (grossIncome <= SUBSIDY_CONFIG.faixa1.rendaMax) {
+    // Faixa Subsidio 1
+    const { rendaMin, rendaMax, tetoGrupoIV, bonusFGTS, bonusDependentes } = SUBSIDY_CONFIG.faixa1
+    const fator = Math.max(0, Math.min(1, (rendaMax - grossIncome) / (rendaMax - rendaMin)))
+    subsidioBase = tetoGrupoIV * fator
+    if (hasFGTS3Years) bonus += bonusFGTS
+    if (hasMultipleBuyers) bonus += bonusDependentes
+  } else if (grossIncome <= SUBSIDY_CONFIG.faixa2.rendaMax) {
+    // Faixa Subsidio 2
+    const { rendaMin, rendaMax, tetoGrupoIV } = SUBSIDY_CONFIG.faixa2
+    const fator = Math.max(0, (rendaMax - grossIncome) / (rendaMax - rendaMin))
+    subsidioBase = tetoGrupoIV * fator
+  } else {
+    // Faixa 3+: sem subsidio
+    return 0
+  }
+
+  const subsidy = Math.round(subsidioBase + bonus)
+  // Nao pode ultrapassar 30% do valor do imovel
+  return Math.min(subsidy, Math.round(propertyValue * 0.30))
+}
+
+// Taxas reais Caixa 2026 — Nordeste (Icó/CE)
+// Subfaixas de renda com taxas diferenciadas
+function getNominalRate(faixa: MCMVFaixa, hasFGTS: boolean, _caixaRelationship: boolean, grossIncome?: number): number {
+  const cotDiscount = hasFGTS ? 0.50 : 0
+
+  // Subfaixas reais da Caixa
+  if (faixa === '1') {
+    if (grossIncome && grossIncome <= 2000) {
+      return 4.50 - cotDiscount  // NE não-cotista: 4.50%
+    }
+    return 4.75 - cotDiscount    // NE não-cotista: 4.75%
+  }
+
+  if (faixa === '2') {
+    if (grossIncome && grossIncome <= 3500) {
+      return 5.25 - cotDiscount  // NE não-cotista: 5.25%
+    }
+    return 7.00 - cotDiscount    // NE não-cotista: 7.00% (SALTO acima de R$3.500)
+  }
+
+  if (faixa === '3') {
+    return hasFGTS ? 7.66 : 8.16
+  }
+
+  // Faixa 4: 10.50% fixo
+  return 10.50
 }
 
 function nominalToEffective(nominalAnnual: number): number {
@@ -110,22 +181,66 @@ function nominalToEffective(nominalAnnual: number): number {
   return ((Math.pow(1 + monthlyNominal, 12) - 1) * 100)
 }
 
+// MIP (Morte/Invalidez) varia por idade + DFI (Danos Fisicos) fixo
+// Taxas mensais aproximadas calibradas com Simulador Caixa 2026
+const MIP_TABLE: [number, number][] = [
+  [20, 0.00015], [25, 0.00018], [30, 0.00022], [35, 0.00028],
+  [40, 0.00038], [45, 0.00048], [50, 0.00065], [55, 0.00090],
+  [60, 0.00130], [65, 0.00180], [70, 0.00250], [80, 0.00350],
+]
+const DFI_MONTHLY = 0.000145 // ~0.0145% a.m. sobre saldo devedor
+
+function calculateInsuranceRate(birthDate: string): number {
+  const birth = new Date(birthDate)
+  const today = new Date()
+  let age = today.getFullYear() - birth.getFullYear()
+  if (today.getMonth() < birth.getMonth() ||
+    (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate())) {
+    age--
+  }
+  // Interpolar MIP por idade
+  let mip = MIP_TABLE[MIP_TABLE.length - 1][1]
+  for (let i = 0; i < MIP_TABLE.length - 1; i++) {
+    const [ageA, rateA] = MIP_TABLE[i]
+    const [ageB, rateB] = MIP_TABLE[i + 1]
+    if (age >= ageA && age < ageB) {
+      const ratio = (age - ageA) / (ageB - ageA)
+      mip = rateA + (rateB - rateA) * ratio
+      break
+    }
+  }
+  return mip + DFI_MONTHLY
+}
+
+// Taxa de administração mensal Caixa
+const TAXA_ADMIN_MENSAL = 25
+
+// Calcula financiamento maximo pela capacidade de pagamento (parcela SAC <= 30% renda)
+function maxFinancingByCapacity(
+  grossIncome: number, monthlyRate: number, term: number, insuranceRate: number,
+): number {
+  const maxPayment = grossIncome * 0.30 - TAXA_ADMIN_MENSAL // descontar taxa admin
+  // SAC 1a parcela = F/n + F*r + F*ins = F * (1/n + r + ins)
+  const factor = (1 / term) + monthlyRate + insuranceRate
+  return Math.floor(Math.max(0, maxPayment) / factor * 100) / 100
+}
+
 function calculateSAC(financing: number, monthlyRate: number, term: number, insuranceRate: number) {
   const amortization = financing / term
   const firstInterest = financing * monthlyRate
   const firstInsurance = financing * insuranceRate
-  const firstInstallment = amortization + firstInterest + firstInsurance
+  const firstInstallment = amortization + firstInterest + firstInsurance + TAXA_ADMIN_MENSAL
 
   const lastBalance = financing - amortization * (term - 1)
   const lastInterest = lastBalance * monthlyRate
   const lastInsurance = lastBalance * insuranceRate
-  const lastInstallment = amortization + lastInterest + lastInsurance
+  const lastInstallment = amortization + lastInterest + lastInsurance + TAXA_ADMIN_MENSAL
 
   // Total pago (soma de todas as parcelas)
   let totalPaid = 0
   for (let i = 0; i < term; i++) {
     const balance = financing - amortization * i
-    totalPaid += amortization + (balance * monthlyRate) + (balance * insuranceRate)
+    totalPaid += amortization + (balance * monthlyRate) + (balance * insuranceRate) + TAXA_ADMIN_MENSAL
   }
 
   return {
@@ -146,13 +261,13 @@ function calculatePRICE(financing: number, monthlyRate: number, term: number, in
   const baseInstallment = financing * coefficient
 
   const firstInsurance = financing * insuranceRate
-  const firstInstallment = baseInstallment + firstInsurance
+  const firstInstallment = baseInstallment + firstInsurance + TAXA_ADMIN_MENSAL
 
   // Ultima parcela: seguro sobre saldo final
   const lastBalance = financing * (Math.pow(1 + monthlyRate, term) - Math.pow(1 + monthlyRate, term - 1)) /
     (Math.pow(1 + monthlyRate, term) - 1)
   const lastInsurance = Math.abs(lastBalance) * insuranceRate
-  const lastInstallment = baseInstallment + lastInsurance
+  const lastInstallment = baseInstallment + lastInsurance + TAXA_ADMIN_MENSAL
 
   // Total pago
   let totalPaid = 0
@@ -161,7 +276,7 @@ function calculatePRICE(financing: number, monthlyRate: number, term: number, in
     const interest = balance * monthlyRate
     const amort = baseInstallment - interest
     const insurance = balance * insuranceRate
-    totalPaid += baseInstallment + insurance
+    totalPaid += baseInstallment + insurance + TAXA_ADMIN_MENSAL
     balance -= amort
   }
 
@@ -197,20 +312,27 @@ function simulateMCMV(input: SimulationInput): SimulationResult {
     ineligibleReason = `Valor do imóvel (R$ ${input.propertyValue.toLocaleString('pt-BR')}) acima do limite da Faixa ${faixa} (R$ ${config.maxValue.toLocaleString('pt-BR')}).`
   }
 
-  const subsidy = eligible ? calculateSubsidy(faixa, input.grossIncome, input.propertyValue, input.hadSubsidy) : 0
-
-  // Cota maxima
-  const maxFinancingRate = (input.propertyType === 'usado') ? 0.70 : 0.80
-  const maxFinancing = input.propertyValue * maxFinancingRate
-
-  const financingAmount = Math.min(maxFinancing, input.propertyValue - subsidy)
-  const downPayment = Math.max(0, input.propertyValue - financingAmount - subsidy)
+  const subsidy = eligible
+    ? calculateSubsidy(faixa, input.grossIncome, input.propertyValue, input.hadSubsidy, input.hasMultipleBuyers, input.hasFGTS3Years)
+    : 0
 
   // Taxas
-  const nominalRate = getNominalRate(faixa, input.hasFGTS3Years, input.caixaRelationship)
+  const nominalRate = getNominalRate(faixa, input.hasFGTS3Years, input.caixaRelationship, input.grossIncome)
   const effectiveRate = nominalToEffective(nominalRate)
   const monthlyRate = nominalRate / 12 / 100
-  const insuranceRate = 0.0003 // MIP + DFI estimado
+  const insuranceRate = calculateInsuranceRate(input.birthDate)
+
+  // Cota maxima (80% construcao/novo, 70% usado)
+  const maxFinancingRate = (input.propertyType === 'usado') ? 0.70 : 0.80
+  const maxByCota = input.propertyValue * maxFinancingRate
+
+  // Limite por capacidade de pagamento (1a parcela SAC <= 30% da renda)
+  const maxByCapacity = maxFinancingByCapacity(input.grossIncome, monthlyRate, input.termMonths, insuranceRate)
+
+  // Financiamento = menor entre: cota maxima, capacidade de pagamento, valor-subsidio
+  const maxAvailable = input.propertyValue - subsidy
+  const financingAmount = Math.min(maxByCota, maxByCapacity, maxAvailable)
+  const downPayment = Math.max(0, input.propertyValue - financingAmount - subsidy)
 
   // Modality
   const modality = input.propertyType === 'construcao'
@@ -257,10 +379,9 @@ function parseInputCurrency(formatted: string): number {
   return Number(formatted.replace(/\./g, '')) || 0
 }
 
-function generateEvolutionData(result: SimulationResult) {
+function generateEvolutionData(result: SimulationResult, insuranceRate: number) {
   const data: { month: number; sac: number; price: number }[] = []
   const monthlyRate = result.sac.nominalRate / 12 / 100
-  const insuranceRate = 0.0003
   const amortSAC = result.financingAmount / result.termMonths
 
   // PRICE base
@@ -744,8 +865,9 @@ export default function SimuladorMCMV() {
 
   const evolutionData = useMemo(() => {
     if (!currentResult) return []
-    return generateEvolutionData(currentResult)
-  }, [currentResult])
+    const insRate = calculateInsuranceRate(birthDate)
+    return generateEvolutionData(currentResult, insRate)
+  }, [currentResult, birthDate])
 
   const pieData = useMemo(() => {
     if (!currentResult) return []

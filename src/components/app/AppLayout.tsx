@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import {
-  LayoutDashboard, Users, Calculator, Building2, MapPin, HardHat,
+  LayoutDashboard, Users, Landmark, Building2, MapPin, HardHat,
   Package, MessageSquare, Layers, LogOut, Menu, X, ChevronRight
 } from 'lucide-react'
 
@@ -10,7 +10,7 @@ const nav = [
   { to: '/app/ecossistema', icon: Layers, label: 'Ecossistema' },
   { to: '/app', icon: LayoutDashboard, label: 'Dashboard', end: true },
   { to: '/app/pipeline', icon: Users, label: 'Pipeline CRM' },
-  { to: '/app/simulacoes', icon: Calculator, label: 'Simulacoes' },
+  { to: '/app/correspondente', icon: Landmark, label: 'Correspondente' },
   { to: '/app/imoveis', icon: Building2, label: 'Imoveis' },
   { to: '/app/lotes', icon: MapPin, label: 'Loteamentos' },
   { to: '/app/obras', icon: HardHat, label: 'Obras' },

@@ -1,0 +1,282 @@
+{
+  "metadata": {
+    "simulador": "https://www8.caixa.gov.br/siopiinternet-web/simulaOperacaoInternet.do?method=inicializarCasoUso",
+    "dataExecucao": "2026-04-08T21:14:13.571Z",
+    "parametrosFixos": {
+      "uf": "CE",
+      "cidade": "Icó",
+      "cidadeCode": "1423",
+      "valorImovel": "210.000,00",
+      "tipoImovel": "Residencial",
+      "categoriaImovel": "Aquisição de Imóvel Novo"
+    },
+    "totalCenarios": 40,
+    "cenariosConcluidos": 16
+  },
+  "resultados": [
+    {
+      "renda": 1500,
+      "rendaFormatada": "R$ 1.500,00",
+      "idade": 25,
+      "fgts": "sem_fgts",
+      "dataNascimento": "08/04/2001",
+      "produtos": [],
+      "todosDisponiveis": [
+        "Programa Minha Casa, Minha Vida - Recursos FGTS: Imóvel vinc. a Empreendimento financiado na CAIXA",
+        "Programa Minha Casa, Minha Vida - Recursos FGTS",
+        "SBPE (TR): Imóvel vinculado a Empreendimento Financiado na CAIXA - Taxa Balcão",
+        "SBPE (TR): Taxa Balcão"
+      ],
+      "timestamp": "2026-04-08T21:05:54.653Z",
+      "error": "__name is not defined"
+    },
+    {
+      "renda": 1500,
+      "rendaFormatada": "R$ 1.500,00",
+      "idade": 25,
+      "fgts": "com_fgts",
+      "dataNascimento": "08/04/2001",
+      "produtos": [],
+      "todosDisponiveis": [
+        "Programa Minha Casa, Minha Vida - Recursos FGTS: Imóvel vinc. a Empreendimento financiado na CAIXA",
+        "Programa Minha Casa, Minha Vida - Recursos FGTS",
+        "Programa Minha Casa, Minha Vida/Pró-Cotista - Recursos FGTS",
+        "SBPE (TR): Imóvel vinculado a Empreendimento Financiado na CAIXA - Taxa Balcão",
+        "SBPE (TR): Taxa Balcão"
+      ],
+      "timestamp": "2026-04-08T21:06:26.735Z",
+      "error": "__name is not defined"
+    },
+    {
+      "renda": 1500,
+      "rendaFormatada": "R$ 1.500,00",
+      "idade": 40,
+      "fgts": "sem_fgts",
+      "dataNascimento": "08/04/1986",
+      "produtos": [],
+      "todosDisponiveis": [
+        "Programa Minha Casa, Minha Vida - Recursos FGTS: Imóvel vinc. a Empreendimento financiado na CAIXA",
+        "Programa Minha Casa, Minha Vida - Recursos FGTS",
+        "SBPE (TR): Imóvel vinculado a Empreendimento Financiado na CAIXA - Taxa Balcão",
+        "SBPE (TR): Taxa Balcão"
+      ],
+      "timestamp": "2026-04-08T21:06:58.173Z",
+      "error": "__name is not defined"
+    },
+    {
+      "renda": 1500,
+      "rendaFormatada": "R$ 1.500,00",
+      "idade": 40,
+      "fgts": "com_fgts",
+      "dataNascimento": "08/04/1986",
+      "produtos": [],
+      "todosDisponiveis": [
+        "Programa Minha Casa, Minha Vida - Recursos FGTS: Imóvel vinc. a Empreendimento financiado na CAIXA",
+        "Programa Minha Casa, Minha Vida - Recursos FGTS",
+        "Programa Minha Casa, Minha Vida/Pró-Cotista - Recursos FGTS",
+        "SBPE (TR): Imóvel vinculado a Empreendimento Financiado na CAIXA - Taxa Balcão",
+        "SBPE (TR): Taxa Balcão"
+      ],
+      "timestamp": "2026-04-08T21:07:29.713Z",
+      "error": "__name is not defined"
+    },
+    {
+      "renda": 2000,
+      "rendaFormatada": "R$ 2.000,00",
+      "idade": 25,
+      "fgts": "sem_fgts",
+      "dataNascimento": "08/04/2001",
+      "produtos": [],
+      "todosDisponiveis": [
+        "Programa Minha Casa, Minha Vida - Recursos FGTS: Imóvel vinc. a Empreendimento financiado na CAIXA",
+        "Programa Minha Casa, Minha Vida - Recursos FGTS",
+        "SBPE (TR): Imóvel vinculado a Empreendimento Financiado na CAIXA - Taxa Balcão",
+        "SBPE (TR): Taxa Balcão"
+      ],
+      "timestamp": "2026-04-08T21:08:00.920Z",
+      "error": "__name is not defined"
+    },
+    {
+      "renda": 2000,
+      "rendaFormatada": "R$ 2.000,00",
+      "idade": 25,
+      "fgts": "com_fgts",
+      "dataNascimento": "08/04/2001",
+      "produtos": [],
+      "todosDisponiveis": [
+        "Programa Minha Casa, Minha Vida - Recursos FGTS: Imóvel vinc. a Empreendimento financiado na CAIXA",
+        "Programa Minha Casa, Minha Vida - Recursos FGTS",
+        "Programa Minha Casa, Minha Vida/Pró-Cotista - Recursos FGTS",
+        "SBPE (TR): Imóvel vinculado a Empreendimento Financiado na CAIXA - Taxa Balcão",
+        "SBPE (TR): Taxa Balcão"
+      ],
+      "timestamp": "2026-04-08T21:08:31.958Z",
+      "error": "__name is not defined"
+    },
+    {
+      "renda": 2000,
+      "rendaFormatada": "R$ 2.000,00",
+      "idade": 40,
+      "fgts": "sem_fgts",
+      "dataNascimento": "08/04/1986",
+      "produtos": [],
+      "todosDisponiveis": [
+        "Programa Minha Casa, Minha Vida - Recursos FGTS: Imóvel vinc. a Empreendimento financiado na CAIXA",
+        "Programa Minha Casa, Minha Vida - Recursos FGTS",
+        "SBPE (TR): Imóvel vinculado a Empreendimento Financiado na CAIXA - Taxa Balcão",
+        "SBPE (TR): Taxa Balcão"
+      ],
+      "timestamp": "2026-04-08T21:09:03.184Z",
+      "error": "__name is not defined"
+    },
+    {
+      "renda": 2000,
+      "rendaFormatada": "R$ 2.000,00",
+      "idade": 40,
+      "fgts": "com_fgts",
+      "dataNascimento": "08/04/1986",
+      "produtos": [],
+      "todosDisponiveis": [
+        "Programa Minha Casa, Minha Vida - Recursos FGTS: Imóvel vinc. a Empreendimento financiado na CAIXA",
+        "Programa Minha Casa, Minha Vida - Recursos FGTS",
+        "Programa Minha Casa, Minha Vida/Pró-Cotista - Recursos FGTS",
+        "SBPE (TR): Imóvel vinculado a Empreendimento Financiado na CAIXA - Taxa Balcão",
+        "SBPE (TR): Taxa Balcão"
+      ],
+      "timestamp": "2026-04-08T21:09:34.072Z",
+      "error": "__name is not defined"
+    },
+    {
+      "renda": 2500,
+      "rendaFormatada": "R$ 2.500,00",
+      "idade": 25,
+      "fgts": "sem_fgts",
+      "dataNascimento": "08/04/2001",
+      "produtos": [],
+      "todosDisponiveis": [
+        "Programa Minha Casa, Minha Vida - Recursos FGTS: Imóvel vinc. a Empreendimento financiado na CAIXA",
+        "Programa Minha Casa, Minha Vida - Recursos FGTS",
+        "SBPE (TR): Imóvel vinculado a Empreendimento Financiado na CAIXA - Taxa Balcão",
+        "SBPE (TR): Taxa Balcão"
+      ],
+      "timestamp": "2026-04-08T21:10:05.266Z",
+      "error": "__name is not defined"
+    },
+    {
+      "renda": 2500,
+      "rendaFormatada": "R$ 2.500,00",
+      "idade": 25,
+      "fgts": "com_fgts",
+      "dataNascimento": "08/04/2001",
+      "produtos": [],
+      "todosDisponiveis": [
+        "Programa Minha Casa, Minha Vida - Recursos FGTS: Imóvel vinc. a Empreendimento financiado na CAIXA",
+        "Programa Minha Casa, Minha Vida - Recursos FGTS",
+        "Programa Minha Casa, Minha Vida/Pró-Cotista - Recursos FGTS",
+        "SBPE (TR): Imóvel vinculado a Empreendimento Financiado na CAIXA - Taxa Balcão",
+        "SBPE (TR): Taxa Balcão"
+      ],
+      "timestamp": "2026-04-08T21:10:36.232Z",
+      "error": "__name is not defined"
+    },
+    {
+      "renda": 2500,
+      "rendaFormatada": "R$ 2.500,00",
+      "idade": 40,
+      "fgts": "sem_fgts",
+      "dataNascimento": "08/04/1986",
+      "produtos": [],
+      "todosDisponiveis": [
+        "Programa Minha Casa, Minha Vida - Recursos FGTS: Imóvel vinc. a Empreendimento financiado na CAIXA",
+        "Programa Minha Casa, Minha Vida - Recursos FGTS",
+        "SBPE (TR): Imóvel vinculado a Empreendimento Financiado na CAIXA - Taxa Balcão",
+        "SBPE (TR): Taxa Balcão"
+      ],
+      "timestamp": "2026-04-08T21:11:07.372Z",
+      "error": "__name is not defined"
+    },
+    {
+      "renda": 2500,
+      "rendaFormatada": "R$ 2.500,00",
+      "idade": 40,
+      "fgts": "com_fgts",
+      "dataNascimento": "08/04/1986",
+      "produtos": [],
+      "todosDisponiveis": [
+        "Programa Minha Casa, Minha Vida - Recursos FGTS: Imóvel vinc. a Empreendimento financiado na CAIXA",
+        "Programa Minha Casa, Minha Vida - Recursos FGTS",
+        "Programa Minha Casa, Minha Vida/Pró-Cotista - Recursos FGTS",
+        "SBPE (TR): Imóvel vinculado a Empreendimento Financiado na CAIXA - Taxa Balcão",
+        "SBPE (TR): Taxa Balcão"
+      ],
+      "timestamp": "2026-04-08T21:11:39.013Z",
+      "error": "__name is not defined"
+    },
+    {
+      "renda": 2640,
+      "rendaFormatada": "R$ 2.640,00",
+      "idade": 25,
+      "fgts": "sem_fgts",
+      "dataNascimento": "08/04/2001",
+      "produtos": [],
+      "todosDisponiveis": [
+        "Programa Minha Casa, Minha Vida - Recursos FGTS: Imóvel vinc. a Empreendimento financiado na CAIXA",
+        "Programa Minha Casa, Minha Vida - Recursos FGTS",
+        "SBPE (TR): Imóvel vinculado a Empreendimento Financiado na CAIXA - Taxa Balcão",
+        "SBPE (TR): Taxa Balcão"
+      ],
+      "timestamp": "2026-04-08T21:12:10.384Z",
+      "error": "__name is not defined"
+    },
+    {
+      "renda": 2640,
+      "rendaFormatada": "R$ 2.640,00",
+      "idade": 25,
+      "fgts": "com_fgts",
+      "dataNascimento": "08/04/2001",
+      "produtos": [],
+      "todosDisponiveis": [
+        "Programa Minha Casa, Minha Vida - Recursos FGTS: Imóvel vinc. a Empreendimento financiado na CAIXA",
+        "Programa Minha Casa, Minha Vida - Recursos FGTS",
+        "Programa Minha Casa, Minha Vida/Pró-Cotista - Recursos FGTS",
+        "SBPE (TR): Imóvel vinculado a Empreendimento Financiado na CAIXA - Taxa Balcão",
+        "SBPE (TR): Taxa Balcão"
+      ],
+      "timestamp": "2026-04-08T21:12:41.705Z",
+      "error": "__name is not defined"
+    },
+    {
+      "renda": 2640,
+      "rendaFormatada": "R$ 2.640,00",
+      "idade": 40,
+      "fgts": "sem_fgts",
+      "dataNascimento": "08/04/1986",
+      "produtos": [],
+      "todosDisponiveis": [
+        "Programa Minha Casa, Minha Vida - Recursos FGTS: Imóvel vinc. a Empreendimento financiado na CAIXA",
+        "Programa Minha Casa, Minha Vida - Recursos FGTS",
+        "SBPE (TR): Imóvel vinculado a Empreendimento Financiado na CAIXA - Taxa Balcão",
+        "SBPE (TR): Taxa Balcão"
+      ],
+      "timestamp": "2026-04-08T21:13:12.944Z",
+      "error": "__name is not defined"
+    },
+    {
+      "renda": 2640,
+      "rendaFormatada": "R$ 2.640,00",
+      "idade": 40,
+      "fgts": "com_fgts",
+      "dataNascimento": "08/04/1986",
+      "produtos": [],
+      "todosDisponiveis": [
+        "Programa Minha Casa, Minha Vida - Recursos FGTS: Imóvel vinc. a Empreendimento financiado na CAIXA",
+        "Programa Minha Casa, Minha Vida - Recursos FGTS",
+        "Programa Minha Casa, Minha Vida/Pró-Cotista - Recursos FGTS",
+        "SBPE (TR): Imóvel vinculado a Empreendimento Financiado na CAIXA - Taxa Balcão",
+        "SBPE (TR): Taxa Balcão"
+      ],
+      "timestamp": "2026-04-08T21:13:43.874Z",
+      "error": "__name is not defined"
+    }
+  ]
+}
